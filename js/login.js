@@ -38,7 +38,7 @@
       method: "POST",
       params: { loginId, loginPwd },
     });
-    res && window.location.replace("/index.html");
+    res && window.location.replace(baseUrl + "index.html");
   };
 
   init();

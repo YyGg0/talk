@@ -2,6 +2,7 @@
   let page = 0;
   let size = 10;
   let chatTotal = 0;
+  let sendType = "enter";
   // 获取dom
   const chatContent = document.querySelector(".content-body");
   // 初始化
@@ -14,6 +15,43 @@
   const initEvents = () => {
     sendMessage.addEventListener("click", onsendAndGet);
     chatContent.addEventListener("scroll", onhistory);
+    arrContainer.addEventListener("click", onarrContainer);
+    // console.log(Array.isArray(selectContainer.children));
+    Array.from(selectContainer.children).forEach((child) => {
+      child.addEventListener("click", onselectContainer);
+    });
+    whatMessage.addEventListener("keyup", onwhatMessage);
+    closeBtn.addEventListener("click", oncloseBtn);
+  };
+  // 关闭窗口事件
+  const oncloseBtn = () => {
+    sessionStorage.removeItem("token");
+    window.location.replace(baseUrl + "login.html");
+  };
+  // 键盘输出
+  const onwhatMessage = (e) => {
+    // console.log(e.keyCode, e.ctrlKey);
+    if (
+      (e.keyCode === 13 && sendType === "enter" && !e.ctrlKey) ||
+      (e.keyCode === 13 && sendType === "ctrlEnter" && e.ctrlKey)
+    ) {
+      sendMessage.click();
+    }
+  };
+  // 子项展示事件
+  const onselectContainer = function () {
+    // 点击事件前先去除之前有的
+    const hasOn = document.querySelector(".select-item.on");
+    hasOn && hasOn.classList.remove("on");
+    this.classList.add("on");
+    sendType = this.getAttribute("type");
+    // console.log(sendType);
+    selectContainer.style.display = "none";
+  };
+
+  // 点击展示
+  const onarrContainer = () => {
+    selectContainer.style.display = "block";
   };
   // 滚动条往上，返回历史记录
   const onhistory = () => {
@@ -34,7 +72,7 @@
       window.alert("发送消息为空");
       return;
     }
-    setCharLists([{ from: "user", content }]);
+    setCharLists([{ from: "user", content }], "botton");
     whatMessage.value = "";
     // 发送信息
     const res = await fnFetch({
@@ -42,7 +80,7 @@
       method: "POST",
       params: { content },
     });
-    setCharLists([{ from: "robot", content: res.content }]);
+    setCharLists([{ from: "robot", content: res.content }], "botton");
   };
   // 设置个人信息
   const setUserMessage = async () => {
@@ -71,6 +109,7 @@
   };
   // 设置历史聊天记录
   const setCharLists = async (res, state) => {
+    res.reverse();
     // console.log(res);
     let robotContents;
     // let userContents;
@@ -105,9 +144,10 @@
       .join("");
     // console.log(whatContents);
     // 滚动到最下面
+    let bottonSize;
     if (state === "botton") {
       chatContent.innerHTML += whatContents;
-      const bottonSize =
+      bottonSize =
         chatContent.children[chatContent.children.length - 1].offsetTop;
       chatContent.scrollTop = bottonSize;
     } else if (state === "top") {

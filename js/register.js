@@ -44,7 +44,7 @@
         loginPwd,
       },
     });
-    response && window.location.replace("/login.html");
+    response && window.location.replace(baseUrl + "login.html");
   };
 
   const checkVar = (loginId, nickname, loginPwd, userPwd) => {

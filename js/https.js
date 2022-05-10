@@ -34,7 +34,7 @@ const fnFetch = async ({ url, method = "GET", params = {} }) => {
     } else {
       if ((result.status = 401)) {
         window.alert("权限错误");
-        window.location.replace("/login.html");
+        window.location.replace(baseUrl + "login.html");
         return;
       }
       window.alert(result.msg);
